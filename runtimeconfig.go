@@ -8,14 +8,18 @@ import (
 	"sync"
 )
 
+// RuntimeConfig a struct for managing environment variables
 type RuntimeConfig struct {
 	data       map[string]string // where our data is stored
 	ignoreKeys map[string]bool   // mainly used for validation step
 	mu         sync.RWMutex      // mutex for thread safe
 }
 
+// mKeyDefaultValue package const for empty string
 const mKeyDefaultValue string = ""
 
+// NewRuntimeConfig returns a RuntimeConfig initialized with defaultKeys
+// and ignoreKeys
 func NewRuntimeConfig(defaultKeys, ignoreKeys []string) *RuntimeConfig {
 	cm := &RuntimeConfig{
 		data:       make(map[string]string),
@@ -30,6 +34,7 @@ func NewRuntimeConfig(defaultKeys, ignoreKeys []string) *RuntimeConfig {
 	return cm
 }
 
+// CreateCopy returns a Copy of RuntimeConfig
 func (rconfig *RuntimeConfig) CreateCopy() *RuntimeConfig {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
@@ -50,36 +55,42 @@ func (rconfig *RuntimeConfig) CreateCopy() *RuntimeConfig {
 	}
 }
 
+// ClearData empties the data from a RuntimeConfig
 func (rconfig *RuntimeConfig) ClearData() {
 	rconfig.mu.Lock()
 	defer rconfig.mu.Unlock()
 	rconfig.data = make(map[string]string)
 }
 
+// ClearIgnoreKeys empties the ignoreKeys map from a RuntimeConfig
 func (rconfig *RuntimeConfig) ClearIgnoreKeys() {
 	rconfig.mu.Lock()
 	defer rconfig.mu.Unlock()
 	rconfig.ignoreKeys = make(map[string]bool)
 }
 
+// Set assigns a key value pair in the RuntimeConfig data prop
 func (rconfig *RuntimeConfig) Set(key, value string) {
 	rconfig.mu.Lock()
 	defer rconfig.mu.Unlock()
 	rconfig.data[key] = value
 }
 
+// Get returns the value provided a key from RuntimeConfig data prop
 func (rconfig *RuntimeConfig) Get(key string) string {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
 	return rconfig.data[key]
 }
 
+// Delete removes key value pair from RuntimeConfig data prop
 func (rconfig *RuntimeConfig) Delete(key string) {
 	rconfig.mu.Lock()
 	defer rconfig.mu.Unlock()
 	delete(rconfig.data, key)
 }
 
+// Keys returns the keys from the RuntimeConfig data prop
 func (rconfig *RuntimeConfig) Keys() []string {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
@@ -90,12 +101,14 @@ func (rconfig *RuntimeConfig) Keys() []string {
 	return keys
 }
 
+// Size the size of RuntimeConfig data prop
 func (rconfig *RuntimeConfig) Size() int {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
 	return len(rconfig.data)
 }
 
+// AddIgnoreKeys appends multiple keys to the RuntimeConfig ignoreKeys map
 func (rconfig *RuntimeConfig) AddIgnoreKeys(keys ...string) {
 	rconfig.mu.Lock()
 	defer rconfig.mu.Unlock()
@@ -110,6 +123,7 @@ func (rconfig *RuntimeConfig) AddIgnoreKeys(keys ...string) {
 	}
 }
 
+// AddIgnoreKey appends a single key to the RuntimeConfig ignoreKeys map
 func (rconfig *RuntimeConfig) AddIgnoreKey(key string) {
 	rconfig.mu.Lock()
 	defer rconfig.mu.Unlock()
@@ -123,6 +137,7 @@ func (rconfig *RuntimeConfig) AddIgnoreKey(key string) {
 	fmt.Printf("Key '%s' added to ignoreKeys.\n", key)
 }
 
+// RemoveIgnoreKey removes a key from ignore keys in the RuntimeConfig
 func (rconfig *RuntimeConfig) RemoveIgnoreKey(key string) {
 	rconfig.mu.Lock()
 	defer rconfig.mu.Unlock()
@@ -136,6 +151,7 @@ func (rconfig *RuntimeConfig) RemoveIgnoreKey(key string) {
 	fmt.Printf("Key '%s' removed from ignoreKeys.\n", key)
 }
 
+// IgnoreKeys returns a list of ignoreKeys RuntimeConfig
 func (rconfig *RuntimeConfig) IgnoreKeys() []string {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
@@ -146,6 +162,8 @@ func (rconfig *RuntimeConfig) IgnoreKeys() []string {
 	return keys
 }
 
+// LoadValueFromEnv iterates over each key in the data prop
+// and calls an os.Getenv to get the value
 func (rconfig *RuntimeConfig) LoadValueFromEnv() {
 	rconfig.mu.Lock()
 	defer rconfig.mu.Unlock()
@@ -154,6 +172,9 @@ func (rconfig *RuntimeConfig) LoadValueFromEnv() {
 	}
 }
 
+// ValuesLoaded returns a bool based on all values being populated
+// note: items in the ignoreKeys will not count against the overall
+// loaded status
 func (rconfig *RuntimeConfig) ValuesLoaded() bool {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
@@ -168,6 +189,8 @@ func (rconfig *RuntimeConfig) ValuesLoaded() bool {
 	return true
 }
 
+// PrintMissingValues prints a lists of what values are missing (unset)
+// note: items in the ignoreKeys will not count against missing
 func (rconfig *RuntimeConfig) PrintMissingValues() {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
@@ -181,6 +204,8 @@ func (rconfig *RuntimeConfig) PrintMissingValues() {
 	}
 }
 
+// PrintStatus prints a lists of what values are missing (unset)
+// note: this does not take into account ignore list
 func (rconfig *RuntimeConfig) PrintStatus() {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
