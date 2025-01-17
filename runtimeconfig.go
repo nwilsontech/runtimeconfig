@@ -28,21 +28,6 @@ func NewRuntimeConfig(defaultKeys, ignoreKeys []string) *RuntimeConfig {
 	return cm
 }
 
-func getKeys(m map[string]string) []string {
-	keys := make([]string, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	return keys
-}
-func getKeysBool(m map[string]bool) []string {
-	keys := make([]string, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	return keys
-}
-
 func (rconfig *RuntimeConfig) Copy() *RuntimeConfig {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
