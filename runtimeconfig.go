@@ -1,3 +1,5 @@
+// Package runtimeconfig provides a map derived struct that can load its
+// keys from environment variables
 package runtimeconfig
 
 import (
