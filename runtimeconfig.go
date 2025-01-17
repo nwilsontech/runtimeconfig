@@ -115,7 +115,7 @@ func (rconfig *RuntimeConfig) AddIgnoreKeys(keys ...string) {
 	for _, key := range keys {
 		if rconfig.ignoreKeys[key] {
 			fmt.Printf("Key '%s' is already in ignoreKeys.\n", key)
-			return
+			continue
 		}
 
 		rconfig.ignoreKeys[key] = true
