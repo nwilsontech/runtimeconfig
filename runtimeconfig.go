@@ -28,6 +28,41 @@ func NewRuntimeConfig(defaultKeys, ignoreKeys []string) *RuntimeConfig {
 	return cm
 }
 
+func getKeys(m map[string]string) []string {
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	return keys
+}
+func getKeysBool(m map[string]bool) []string {
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	return keys
+}
+
+func (rconfig *RuntimeConfig) Copy() *RuntimeConfig {
+	rconfig.mu.RLock()
+	defer rconfig.mu.RUnlock()
+
+	newData := make(map[string]string, len(rconfig.data))
+	for key, value := range rconfig.data {
+		newData[key] = value
+	}
+
+	newIgnoreKeys := make(map[string]bool, len(rconfig.ignoreKeys))
+	for key, value := range rconfig.ignoreKeys {
+		newIgnoreKeys[key] = value
+	}
+
+	return &RuntimeConfig{
+		data:       newData,
+		ignoreKeys: newIgnoreKeys,
+	}
+}
+
 func (rconfig *RuntimeConfig) ClearData() {
 	rconfig.mu.Lock()
 	defer rconfig.mu.Unlock()
