@@ -28,7 +28,7 @@ func NewRuntimeConfig(defaultKeys, ignoreKeys []string) *RuntimeConfig {
 	return cm
 }
 
-func (rconfig *RuntimeConfig) Copy() *RuntimeConfig {
+func (rconfig *RuntimeConfig) CreateCopy() *RuntimeConfig {
 	rconfig.mu.RLock()
 	defer rconfig.mu.RUnlock()
 
